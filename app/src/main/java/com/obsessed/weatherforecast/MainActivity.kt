@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.obsessed.weatherforecast.screens.MainScreen
 import com.obsessed.weatherforecast.ui.theme.WeatherForecastTheme
 import org.json.JSONObject
 
@@ -26,13 +27,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherForecastTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Genova", this)
-                }
+                MainScreen()
             }
         }
     }
