@@ -5,19 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.obsessed.weatherforecast.screens.MainScreen
+import com.obsessed.weatherforecast.screens.MainCard
+import com.obsessed.weatherforecast.screens.TabLayout
 import com.obsessed.weatherforecast.ui.theme.WeatherForecastTheme
 import org.json.JSONObject
 
@@ -27,7 +30,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherForecastTheme {
-                MainScreen()
+                Image(
+                    painter = painterResource(id = R.drawable.weather_bg),
+                    contentDescription = "image",
+                    modifier = Modifier
+                        .alpha(0.6f)
+                        .fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+                Column {
+                    MainCard()
+                    TabLayout()
+                }
             }
         }
     }

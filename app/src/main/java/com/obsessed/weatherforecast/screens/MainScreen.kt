@@ -1,41 +1,30 @@
 package com.obsessed.weatherforecast.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.google.accompanist.pager.*
 import com.obsessed.weatherforecast.R
 import com.obsessed.weatherforecast.ui.theme.BlueLight
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreen() {
-    Image(
-        painter = painterResource(id = R.drawable.weather_bg),
-        contentDescription = "image",
-        modifier = Modifier
-            .fillMaxSize()
-            .alpha(0.6f),
-        contentScale = ContentScale.FillBounds
-    )
+fun MainCard() {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(5.dp),
 
         ) {
@@ -116,6 +105,52 @@ fun MainScreen() {
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun TabLayout(){
+    var tabList = listOf("HOURS", "DAYS")
+    var pagerState = rememberPagerState()
+    val tabIndex = pagerState.currentPage // страница, которая открыта
+    val coroutineScope = rememberCoroutineScope() //для запуска анимации
+
+    Column(modifier = Modifier
+        .padding(start = 5.dp, end = 5.dp)
+        .clip(RoundedCornerShape(5.dp))
+    ) {
+        TabRow(
+            selectedTabIndex = tabIndex, // выбранный индекс
+            indicator = { pos ->
+                TabRowDefaults.Indicator(
+                    Modifier.pagerTabIndicatorOffset(pagerState, pos)
+                )
+            }, // подсветка выбранного элемента
+            backgroundColor = BlueLight,
+            contentColor = Color.White
+        ) {
+            tabList.forEachIndexed{index, text -> // цикл для создания элементов (Tab)
+                Tab(
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch {// запуск на второстепенном потоке
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    text = {
+                        Text(text = text)
+                    }
+                )
+            }
+        }
+        HorizontalPager(
+            count = tabList.size,
+            state = pagerState,
+            modifier = Modifier.weight(1.0f)
+        ) {index ->
+
         }
     }
 }
