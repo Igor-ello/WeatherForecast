@@ -1,6 +1,7 @@
 package com.obsessed.weatherforecast.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -43,7 +44,7 @@ fun MainCard() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         modifier = Modifier.padding(top = 8.dp, start = 8.dp),
@@ -150,7 +151,11 @@ fun TabLayout(){
             state = pagerState,
             modifier = Modifier.weight(1.0f)
         ) {index ->
-
+            LazyColumn(modifier = Modifier.fillMaxSize()){
+                items(15){
+                    ListItem()
+                }
+            }
         }
     }
 }
