@@ -7,21 +7,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.obsessed.weatherforecast.data.WeatherModel
 import com.obsessed.weatherforecast.screens.MainCard
 import com.obsessed.weatherforecast.screens.TabLayout
 import com.obsessed.weatherforecast.ui.theme.WeatherForecastTheme
+import org.json.JSONException
 import org.json.JSONObject
 
 const val API_KEY = "d3c47e0625444650a9d133848231909"
@@ -30,7 +28,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherForecastTheme {
-                getData("London", "3", this)
+                val daysList = remember {
+                    mutableStateOf(listOf<WeatherModel>())
+                }
+                getData("Moscow", "3", this, daysList)
                 Image(
                     painter = painterResource(id = R.drawable.weather_bg),
                     contentDescription = "image",
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 )
                 Column {
                     MainCard()
-                    TabLayout()
+                    TabLayout(daysList)
                 }
             }
         }
@@ -49,8 +50,8 @@ class MainActivity : ComponentActivity() {
 }
 
 
-private fun getData(city: String, days: String, context: Context){
-    val url = "https://api.weatherapi.com/v1/current.json" +
+private fun getData(city: String, days: String, context: Context, daysList: MutableState<List<WeatherModel>>){
+    val url = "https://api.weatherapi.com/v1/forecast.json" +
             "?key=$API_KEY&" +
             "&q=$city" +
             "&days=$days" +
@@ -60,13 +61,51 @@ private fun getData(city: String, days: String, context: Context){
         Request.Method.GET,
         url, //наша ссылка
         { response -> // слушатель
-            val obj = JSONObject(response)
-            //state.value = obj.getJSONObject("current").getString("temp_c")
-            //humidity.value = obj.getJSONObject("current").getString("humidity")
+            val list = getWeatherByDays(response)
+            daysList.value = list
         },
         { error ->
             Log.d("MyLog", "Error $error")
         }
     )
     queue.add(stringRequest)
+}
+
+private fun getWeatherByDays(response: String): List<WeatherModel>{ // возвращает список WeatherModel
+    val list = ArrayList<WeatherModel>()
+    Log.i("MyLog", response)
+    try {
+        if (response.isEmpty()) return listOf() // если пришёл пустой запрос
+
+        val mainObject = JSONObject(response)
+        val city = mainObject.getJSONObject("location").getString("name")
+        val days = mainObject.getJSONObject("forecast").getJSONArray("forecastday")
+
+        for (i in 0 until days.length()) {
+            val item = days[i] as JSONObject
+            list.add(                         // кладём все в список
+                WeatherModel(
+                    city,
+                    item.getString("date"),
+                    "",
+                    item.getJSONObject("day").getJSONObject("condition").getString("text"),
+                    item.getJSONObject("day").getJSONObject("condition").getString("icon"),
+                    item.getJSONObject("day").getString("maxtemp_c"),
+                    item.getJSONObject("day").getString("mintemp_c"),
+                    item.getJSONArray("hour").toString()
+                )
+            )
+        }
+        list[0] = list[0].copy(
+            //перезаписываем эти элементы
+            time = mainObject.getJSONObject("current")
+                .getString("last_update"), // т.к. на сегодняшний день есть информация, а на завтрашний нет
+            currentTemp = mainObject.getJSONObject("current").getString("temp_c"),
+        )
+    } catch (e: JSONException) {
+        e.printStackTrace()
+        Log.d("MyLog", "JSONException: $e")
+    }
+
+    return list
 }

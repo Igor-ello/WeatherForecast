@@ -40,7 +40,7 @@ fun ListItem(item: WeatherModel) { //клонирование одного эл�
                 Text(text = item.condition, color = Color.White)
             }
             Text(
-                text = item.currentTemp.ifEmpty { "${item.minTemp} / ${item.maxTemp}" }, //если пусто, то {...}, если нет то значение currentTemp
+                text = item.currentTemp.ifEmpty { "${item.minTemp}°C / ${item.maxTemp}°C" }, //если пусто, то {...}, если нет то значение currentTemp
                 color = Color.White,
                 style = TextStyle(fontSize = 25.sp)
             )
