@@ -2,6 +2,8 @@ package com.obsessed.weatherforecast.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.*
 import com.obsessed.weatherforecast.R
+import com.obsessed.weatherforecast.data.WeatherModel
 import com.obsessed.weatherforecast.ui.theme.BlueLight
 import kotlinx.coroutines.launch
 
@@ -152,8 +155,31 @@ fun TabLayout(){
             modifier = Modifier.weight(1.0f)
         ) {index ->
             LazyColumn(modifier = Modifier.fillMaxSize()){
-                items(15){
-                    ListItem()
+                itemsIndexed(
+                    listOf(
+                        WeatherModel( // прогноз на этот день
+                            "London",
+                            "10:00",
+                            "25°C",
+                            "Sunny",
+                            "//cdn.weatherapi.com/weather/64x64/night/143.png",
+                            "",
+                            "",
+                            "",
+                        ),
+                        WeatherModel( // прогноз по дням
+                            "London",
+                            "26/07/2022",
+                            "",
+                            "Sunny",
+                            "//cdn.weatherapi.com/weather/64x64/night/143.png",
+                            "26°",
+                            "12°",
+                            "information in array",
+                        ),
+                    )
+                ) {
+                            _, item -> ListItem(item)
                 }
             }
         }

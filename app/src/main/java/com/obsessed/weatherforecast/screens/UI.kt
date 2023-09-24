@@ -13,11 +13,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.obsessed.weatherforecast.data.WeatherModel
 import com.obsessed.weatherforecast.ui.theme.BlueLight
 
-@Preview(showBackground = true)
 @Composable
-fun ListItem() { //клонирование одного элемениа
+fun ListItem(item: WeatherModel) { //клонирование одного элемениа
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -36,16 +36,16 @@ fun ListItem() { //клонирование одного элемениа
                 modifier = Modifier
                     .padding(top = 5.dp, start = 8.dp, bottom = 5.dp)
             ) {
-                Text(text = "12:00", color = Color.White)
-                Text(text = "Sunny", color = Color.White)
+                Text(text = item.time, color = Color.White)
+                Text(text = item.condition, color = Color.White)
             }
             Text(
-                text = "25°C",
+                text = item.currentTemp.ifEmpty { "${item.minTemp} / ${item.maxTemp}" }, //если пусто, то {...}, если нет то значение currentTemp
                 color = Color.White,
                 style = TextStyle(fontSize = 25.sp)
             )
             AsyncImage(
-                model = "https://cdn.weatherapi.com/weather/64x64/day/116.png",
+                model = "https:${item.icon}", //ссылка на картинку
                 contentDescription = "image_forecast_2",
                 modifier = Modifier
                     .size(35.dp)
