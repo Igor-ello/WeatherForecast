@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherForecastTheme {
+                getData("London", "3", this)
                 Image(
                     painter = painterResource(id = R.drawable.weather_bg),
                     contentDescription = "image",
@@ -47,58 +48,23 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, context: Context) {
-    val state = remember {
-        mutableStateOf("Unknown")
-    }
-    val humidity = remember {
-        mutableStateOf("Unknown")
-    }
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier
-            .fillMaxHeight(0.5f)
-            .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Temp in $name = ${state.value} °C, humidity ${humidity.value} %")
-        }
-        Box(modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Button(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth(),
-                onClick = {
-                    getResult(name, state, humidity, context)
-                },
-            ) {
-                Text(text = "Refresh")
-            }
-        }
-    }
-}
 
-private fun getResult(city: String, state: MutableState<String>, humidity: MutableState<String>, context: Context){
+private fun getData(city: String, days: String, context: Context){
     val url = "https://api.weatherapi.com/v1/current.json" +
             "?key=$API_KEY&" +
-            "q=$city" +
-            "&aqi=no"
-    val queue = Volley.newRequestQueue(context)
-    val stringRequest = StringRequest(
+            "&q=$city" +
+            "&days=$days" +
+            "&aqi=no&alerts=no"
+    val queue = Volley.newRequestQueue(context) // очередь на отправку запроса
+    val stringRequest = StringRequest( // запрос
         Request.Method.GET,
-        url,
-        {
-            response ->
+        url, //наша ссылка
+        { response -> // слушатель
             val obj = JSONObject(response)
-            state.value = obj.getJSONObject("current").getString("temp_c")
-            humidity.value = obj.getJSONObject("current").getString("humidity")
+            //state.value = obj.getJSONObject("current").getString("temp_c")
+            //humidity.value = obj.getJSONObject("current").getString("humidity")
         },
-        {
-            error ->
+        { error ->
             Log.d("MyLog", "Error $error")
         }
     )
