@@ -31,7 +31,19 @@ class MainActivity : ComponentActivity() {
                 val daysList = remember {
                     mutableStateOf(listOf<WeatherModel>())
                 }
-                getData("Moscow", "3", this, daysList)
+                val currentDay = remember {
+                    mutableStateOf(WeatherModel(
+                        "",
+                        "",
+                        "0.0", // укажем значения т.к. инфа с сервера ещё не пришла
+                        "",
+                        "",
+                        "0.0",
+                        "0.0",
+                        "",
+                    ))
+                }
+                getData("Moscow", "3", this, daysList, currentDay)
                 Image(
                     painter = painterResource(id = R.drawable.weather_bg),
                     contentDescription = "image",
@@ -41,8 +53,8 @@ class MainActivity : ComponentActivity() {
                     contentScale = ContentScale.FillBounds
                 )
                 Column {
-                    MainCard()
-                    TabLayout(daysList)
+                    MainCard(currentDay)
+                    TabLayout(daysList, currentDay)
                 }
             }
         }
@@ -50,7 +62,9 @@ class MainActivity : ComponentActivity() {
 }
 
 
-private fun getData(city: String, days: String, context: Context, daysList: MutableState<List<WeatherModel>>){
+private fun getData(city: String, days: String, context: Context,
+                    daysList: MutableState<List<WeatherModel>>,
+                    currentDay: MutableState<WeatherModel>){
     val url = "https://api.weatherapi.com/v1/forecast.json" +
             "?key=$API_KEY&" +
             "&q=$city" +
@@ -62,7 +76,9 @@ private fun getData(city: String, days: String, context: Context, daysList: Muta
         url, //наша ссылка
         { response -> // слушатель
             val list = getWeatherByDays(response)
+            currentDay.value = list[0]
             daysList.value = list
+            Log.d("MyLog", "currentTemp: ${currentDay.value.currentTemp}")
         },
         { error ->
             Log.d("MyLog", "Error $error")
@@ -73,7 +89,6 @@ private fun getData(city: String, days: String, context: Context, daysList: Muta
 
 private fun getWeatherByDays(response: String): List<WeatherModel>{ // возвращает список WeatherModel
     val list = ArrayList<WeatherModel>()
-    Log.i("MyLog", response)
     try {
         if (response.isEmpty()) return listOf() // если пришёл пустой запрос
 
@@ -99,7 +114,7 @@ private fun getWeatherByDays(response: String): List<WeatherModel>{ // возв�
         list[0] = list[0].copy(
             //перезаписываем эти элементы
             time = mainObject.getJSONObject("current")
-                .getString("last_update"), // т.к. на сегодняшний день есть информация, а на завтрашний нет
+                .getString("last_updated"), // т.к. на сегодняшний день есть информация, а на завтрашний нет
             currentTemp = mainObject.getJSONObject("current").getString("temp_c"),
         )
     } catch (e: JSONException) {
