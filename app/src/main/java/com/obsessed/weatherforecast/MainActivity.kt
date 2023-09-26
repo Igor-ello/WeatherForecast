@@ -16,6 +16,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.obsessed.weatherforecast.data.WeatherModel
+import com.obsessed.weatherforecast.screens.DialogSearch
 import com.obsessed.weatherforecast.screens.MainCard
 import com.obsessed.weatherforecast.screens.TabLayout
 import com.obsessed.weatherforecast.ui.theme.WeatherForecastTheme
@@ -43,6 +44,15 @@ class MainActivity : ComponentActivity() {
                         "",
                     ))
                 }
+                val dialogState = remember { // нужно показать диалог или нет
+                    mutableStateOf(false)
+                }
+                if(dialogState.value){ // вызываем наш поиск
+                    DialogSearch(dialogState, onSubmit = {
+                        getData(it, "7", this@MainActivity, daysList, currentDay)
+                    })
+                }
+
                 getData("Moscow", "3", this, daysList, currentDay)
                 Image(
                     painter = painterResource(id = R.drawable.weather_bg),
@@ -55,6 +65,8 @@ class MainActivity : ComponentActivity() {
                 Column {
                     MainCard(currentDay, onClickSync = {
                         getData("Moscow", "3", this@MainActivity, daysList, currentDay)
+                    }, onClickSearch = {
+                        dialogState.value = true
                     })
                     TabLayout(daysList, currentDay)
                 }
