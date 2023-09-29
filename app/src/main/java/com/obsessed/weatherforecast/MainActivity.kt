@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     })
                 }
 
-                getData("Moscow", "3", this, daysList, currentDay)
+                getData("Moscow", "7", this, daysList, currentDay)
                 Image(
                     painter = painterResource(id = R.drawable.weather_bg),
                     contentDescription = "image",
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                 )
                 Column {
                     MainCard(currentDay, onClickSync = {
-                        getData("Moscow", "3", this@MainActivity, daysList, currentDay)
+                        getData("Moscow", "7", this@MainActivity, daysList, currentDay)
                     }, onClickSearch = {
                         dialogState.value = true
                     })
