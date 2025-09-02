@@ -40,7 +40,7 @@ fun ListItem(item: WeatherModel, currentDay: MutableState<WeatherModel>) { //к�
             .fillMaxWidth()
             .padding(top = 3.dp)
             .clickable {
-                if (item.hours.isEmpty()) return@clickable // нет функционала про нажатии прогноза по часам
+                if (item.hours.isEmpty()) return@clickable
                 currentDay.value = item
             },
         backgroundColor = BlueLight,
@@ -61,7 +61,8 @@ fun ListItem(item: WeatherModel, currentDay: MutableState<WeatherModel>) { //к�
                 Text(text = item.condition, color = Color.White)
             }
             Text(
-                text = item.currentTemp.ifEmpty { "${item.minTemp}°C / ${item.maxTemp}°C" }, //если пусто, то {...}, если нет то значение currentTemp
+                // если пусто, то {...}, если нет то значение currentTemp
+                text = item.currentTemp.ifEmpty { "${item.minTemp}°C / ${item.maxTemp}°C" },
                 color = Color.White,
                 style = TextStyle(fontSize = 25.sp)
             )
@@ -78,7 +79,7 @@ fun ListItem(item: WeatherModel, currentDay: MutableState<WeatherModel>) { //к�
 
 
 @Composable
-fun DialogSearch(dialogState: MutableState<Boolean>, onSubmit: (String) -> Unit){         // Поиск
+fun DialogSearch(dialogState: MutableState<Boolean>, onSubmit: (String) -> Unit){ // Поиск
     val dialogText = remember {
         mutableStateOf("") // для обновления текаста в поиске
     }

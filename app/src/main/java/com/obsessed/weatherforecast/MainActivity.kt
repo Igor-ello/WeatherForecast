@@ -23,7 +23,9 @@ import com.obsessed.weatherforecast.ui.theme.WeatherForecastTheme
 import org.json.JSONException
 import org.json.JSONObject
 
+// ЭТО ОЧЕНЬ ПЛОХАЯ ПРАКТИКА
 const val API_KEY = "d3c47e0625444650a9d133848231909"
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(WeatherModel(
                         "",
                         "",
-                        "0.0", // укажем значения т.к. инфа с сервера ещё не пришла
+                        "0.0",
                         "",
                         "",
                         "0.0",
@@ -47,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 val dialogState = remember { // нужно показать диалог или нет
                     mutableStateOf(false)
                 }
-                if(dialogState.value){ // вызываем наш поиск
+                if(dialogState.value){
                     DialogSearch(dialogState, onSubmit = {
                         getData(it, "7", this@MainActivity, daysList, currentDay)
                     })
@@ -85,7 +87,7 @@ private fun getData(city: String, days: String, context: Context,
             "&days=$days" +
             "&aqi=no&alerts=no"
     val queue = Volley.newRequestQueue(context) // очередь на отправку запроса
-    val stringRequest = StringRequest( // запрос
+    val stringRequest = StringRequest(
         Request.Method.GET,
         url, //наша ссылка
         { response -> // слушатель
@@ -101,10 +103,10 @@ private fun getData(city: String, days: String, context: Context,
     queue.add(stringRequest)
 }
 
-private fun getWeatherByDays(response: String): List<WeatherModel>{ // возвращает список WeatherModel
+private fun getWeatherByDays(response: String): List<WeatherModel>{
     val list = ArrayList<WeatherModel>()
     try {
-        if (response.isEmpty()) return listOf() // если пришёл пустой запрос
+        if (response.isEmpty()) return listOf()
 
         val mainObject = JSONObject(response)
         val city = mainObject.getJSONObject("location").getString("name")
@@ -112,7 +114,7 @@ private fun getWeatherByDays(response: String): List<WeatherModel>{ // возв�
 
         for (i in 0 until days.length()) {
             val item = days[i] as JSONObject
-            list.add(                         // кладём все в список
+            list.add(
                 WeatherModel(
                     city,
                     item.getString("date"),
